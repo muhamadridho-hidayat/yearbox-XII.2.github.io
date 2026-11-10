@@ -675,7 +675,7 @@ main.wrap,.wrap{box-sizing:border-box;width:100%;margin-left:auto!important;marg
 <div id="dsong" hidden><button type="button" id="dsPlay" aria-label="Putar lagu"><span></span></button><div class="dsinfo"><b id="dsTitle"></b><small id="dsArtist"></small><div class="dsbar"><i id="dsFill"></i></div></div></div>
 <button onclick="dlg.close()">Tutup</button></dialog>
 <style>
-#vstage{position:relative;width:min(280px,100%);aspect-ratio:1;margin:0 auto 6px;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#vstage{position:relative;width:min(100%,clamp(170px,calc(100vh - 430px),280px));aspect-ratio:1;margin:0 auto 6px;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 #vstage #dav{position:relative;z-index:1;width:52%!important;height:auto!important;aspect-ratio:1;margin:0!important;border-radius:50%!important;overflow:hidden;box-shadow:0 0 0 6px #0b0b0d,0 0 0 8px rgba(255,255,255,.12),0 8px 24px rgba(0,0,0,.5);font-size:2.6rem}
 #vstage #dav img{width:100%;height:100%;border-radius:50%!important;object-fit:cover;object-position:center 22%;display:block}
 #vinyl{position:absolute;inset:0;border-radius:50%;display:none;
@@ -684,6 +684,8 @@ main.wrap,.wrap{box-sizing:border-box;width:100%;margin-left:auto!important;marg
  animation:vspin 5s linear infinite;animation-play-state:paused}
 #vinyl:after{content:"";position:absolute;left:32%;top:32%;width:36%;height:36%;border-radius:50%;background:radial-gradient(circle,#0b0b0d 0 6%,#f3e9d2 7%);box-shadow:0 0 0 5px #0b0b0d}
 #vstage.has #vinyl{display:block}
+#vstage:not(.has){width:auto;aspect-ratio:auto;margin-bottom:8px}
+#vstage:not(.has) #dav{width:150px!important}
 #vstage.playing #vinyl{animation-play-state:running}
 @keyframes vspin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){#vinyl{animation:none}}
@@ -776,30 +778,30 @@ var songs={
 35:{t:"Glory Glory Man United"}
 };
 (function(){
-  var au=new Audio(),box=$("dsong"),btn=$("dsPlay"),ttl=$("dsTitle"),art=$("dsArtist"),fill=$("dsFill"),stage=$("vstage"),bgm=document.getElementById("bgm"),bgmWas=false;
+  var au=new Audio(),box=$("dsong"),btn=$("dsPlay"),ttl=$("dsTitle"),art=$("dsArtist"),fill=$("dsFill"),stage=$("vstage"),bgmWas=false;
+  function B(){return document.getElementById("bgm")}
   au.preload="none";
   function pad(n){return n<10?"0"+n:""+n}
   function stateUI(){var on=!au.paused;btn.classList.toggle("on",on);stage.classList.toggle("playing",on)}
   function stopSong(){au.pause();au.removeAttribute("src");au.load();fill.style.width="0";stateUI()}
-  function resumeBgm(){if(bgm&&bgmWas){var p=bgm.play();if(p&&p.catch)p.catch(function(){})}bgmWas=false}
-  function playSong(){if(bgm&&!bgm.paused){bgmWas=true;bgm.pause()}var p=au.play();if(p&&p.catch)p.catch(function(){})}
+  function resumeBgm(){var bgm=B();if(bgm&&bgmWas){var p=bgm.play();if(p&&p.catch)p.catch(function(){})}bgmWas=false}
+  function playSong(){var bgm=B();if(bgm&&!bgm.paused){bgmWas=true;bgm.pause()}var p=au.play();if(p&&p.catch)p.catch(function(){})}
   function toggle(){if(!au.getAttribute("src"))return;if(au.paused)playSong();else au.pause()}
-  $("grid").addEventListener("click",function(e){
-    var c=e.target.closest(".card");if(!c)return;
+  document.addEventListener("click",function(e){
+    var c=e.target.closest&&e.target.closest("#grid .card");if(!c)return;
     var i=+c.dataset.i,sg=songs[i]||{},f=sg.f||"lagu/"+pad(i+1)+".mp3";
-    stopSong();
-    ttl.textContent=sg.t||"Lagu "+people[i][0].split(" ")[0];
-    art.textContent=sg.a||"";
     box.hidden=false;stage.classList.add("has");
-    au.src=f;playSong();
-  });
+    ttl.textContent=sg.t||"Lagu "+people[i][0].split(" ")[0];
+    art.textContent=sg.a||"";fill.style.width="0";
+    try{stopSong();au.src=f;playSong()}catch(err){ttl.textContent="Lagu belum bisa diputar"}
+  },true);
   btn.addEventListener("click",toggle);
   stage.addEventListener("click",toggle);
   au.addEventListener("play",stateUI);
   au.addEventListener("pause",stateUI);
   au.addEventListener("ended",function(){fill.style.width="0";stateUI();resumeBgm()});
   au.addEventListener("timeupdate",function(){if(au.duration)fill.style.width=(au.currentTime/au.duration*100)+"%"});
-  au.addEventListener("error",function(){if(au.getAttribute("src")){ttl.textContent="Lagu belum ditambahkan";art.textContent="";stage.classList.remove("playing");resumeBgm()}});
+  au.addEventListener("error",function(){if(au.getAttribute("src")){stopSong();box.hidden=true;stage.classList.remove("has");resumeBgm()}});
   $("dlg").addEventListener("close",function(){stopSong();box.hidden=true;stage.classList.remove("has");resumeBgm()});
 })();
 </script>
