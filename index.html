@@ -671,7 +671,33 @@ main.wrap,.wrap{box-sizing:border-box;width:100%;margin-left:auto!important;marg
   </section>
 </main>
 <footer>Dibuat oleh Ridho dengan ♥ untuk kenangan kita · XII.2 · SMA Negeri 1 Gemuh</footer>
-<dialog id="dlg"><div class="av" id="dav"></div><h3 id="dn" style="margin:.2em 0"></h3><div id="da"></div><div id="dc"></div><p id="dq"></p><button onclick="dlg.close()">Tutup</button></dialog>
+<dialog id="dlg"><div id="vstage"><div id="vinyl"></div><div class="av" id="dav"></div></div><h3 id="dn" style="margin:.2em 0"></h3><div id="da"></div><div id="dc"></div><p id="dq"></p>
+<div id="dsong" hidden><button type="button" id="dsPlay" aria-label="Putar lagu"><span></span></button><div class="dsinfo"><b id="dsTitle"></b><small id="dsArtist"></small><div class="dsbar"><i id="dsFill"></i></div></div></div>
+<button onclick="dlg.close()">Tutup</button></dialog>
+<style>
+#vstage{position:relative;width:min(280px,100%);aspect-ratio:1;margin:0 auto 6px;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#vstage #dav{position:relative;z-index:1;margin:0!important;box-shadow:0 12px 30px rgba(0,0,0,.55)}
+#vinyl{position:absolute;inset:0;border-radius:50%;display:none;
+ background:conic-gradient(rgba(255,255,255,0) 0deg,rgba(255,255,255,.24) 40deg,rgba(255,255,255,0) 90deg,rgba(255,255,255,0) 180deg,rgba(255,255,255,.24) 220deg,rgba(255,255,255,0) 270deg),repeating-radial-gradient(circle,#0d0c0f 0 2px,#221f27 2px 3px);
+ box-shadow:0 14px 40px rgba(0,0,0,.55),inset 0 0 0 4px #050506;
+ animation:vspin 5s linear infinite;animation-play-state:paused}
+#vinyl:after{content:"";position:absolute;left:32%;top:32%;width:36%;height:36%;border-radius:50%;background:radial-gradient(circle,#0b0b0d 0 6%,#f3e9d2 7%);box-shadow:0 0 0 5px #0b0b0d}
+#vstage.has #vinyl{display:block}
+#vstage.playing #vinyl{animation-play-state:running}
+@keyframes vspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#vinyl{animation:none}}
+#dsong{display:flex;align-items:center;gap:12px;margin:12px 0 4px;padding:10px 12px;border-radius:14px;background:rgba(127,127,127,.16);text-align:left}
+#dsong[hidden]{display:none}
+#dsong #dsPlay{flex:none;width:42px;height:42px;padding:0;margin:0;border-radius:50%;display:grid;place-items:center}
+#dsPlay span{width:0;height:0;border-left:12px solid currentColor;border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px}
+#dsPlay.on span{width:12px;height:14px;border:0;margin:0;border-left:4px solid currentColor;border-right:4px solid currentColor}
+.dsinfo{min-width:0;flex:1}
+.dsinfo b{display:block;font:700 .95rem system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dsinfo small{display:block;opacity:.75;font:.8rem system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dsinfo small:empty{display:none}
+.dsbar{height:4px;border-radius:4px;background:rgba(127,127,127,.3);margin-top:6px;overflow:hidden}
+.dsbar i{display:block;height:100%;width:0;background:currentColor;opacity:.85}
+</style>
 <script>
 var people=[
 ["Ahmad Khoiruz Ziaad","Absen 1","Jangan lupa bersyukur.","Arsitek"],
@@ -728,6 +754,41 @@ $("grid").onclick=function(e){var c=e.target.closest(".card");if(!c)return;var p
   var k=+c.dataset.i,d=$("dav");if(photos[k+1]){d.className="avbig";d.style.background="none";d.innerHTML='<img src="'+photos[k+1]+'" alt="">'}else{d.className="av";d.style.background=cols[k%6];d.textContent=ini(p[0])};$("dn").textContent=p[0];$("da").textContent=p[1];var dc=$("dc");dc.innerHTML=p[3]?"Cita-cita: <b>"+esc(p[3])+"</b>":"";dc.style.display=p[3]?"":"none";$("dq").textContent="“"+p[2]+"”";$("dlg").showModal()};
 $("awards").innerHTML=awards.map(function(a){return '<div class="award"><small>'+a[0]+'</small><b>'+esc(a[1]).split(" · ").join("<br>")+'</b></div>'}).join("");
 $("gal").innerHTML=(moments.length?moments:[1,2,3,4,5,6]).map(function(m){return typeof m==="object"?'<figure class="shot"><img loading="lazy" src="'+m.src+'" alt=""></figure>':'<div class="shot empty">Foto menyusul</div>'}).join("");
+</script>
+<script>
+/* ====== LAGU PER SISWA ======
+   Taruh file lagu di folder "lagu/" sesuai nomor absen: 01.mp3, 02.mp3, ... 36.mp3
+   Judul/artis/nama file khusus (nomor = urutan siswa, mulai 0):
+   0:{t:"Pretty Eyes", a:"zehdi", f:"lagu/ziaad.mp3"}   */
+var songs={
+};
+(function(){
+  var au=new Audio(),box=$("dsong"),btn=$("dsPlay"),ttl=$("dsTitle"),art=$("dsArtist"),fill=$("dsFill"),stage=$("vstage"),bgm=document.getElementById("bgm"),bgmWas=false;
+  au.preload="none";
+  function pad(n){return n<10?"0"+n:""+n}
+  function stateUI(){var on=!au.paused;btn.classList.toggle("on",on);stage.classList.toggle("playing",on)}
+  function stopSong(){au.pause();au.removeAttribute("src");au.load();fill.style.width="0";stateUI()}
+  function resumeBgm(){if(bgm&&bgmWas){var p=bgm.play();if(p&&p.catch)p.catch(function(){})}bgmWas=false}
+  function playSong(){if(bgm&&!bgm.paused){bgmWas=true;bgm.pause()}var p=au.play();if(p&&p.catch)p.catch(function(){})}
+  function toggle(){if(!au.getAttribute("src"))return;if(au.paused)playSong();else au.pause()}
+  $("grid").addEventListener("click",function(e){
+    var c=e.target.closest(".card");if(!c)return;
+    var i=+c.dataset.i,sg=songs[i]||{},f=sg.f||"lagu/"+pad(i+1)+".mp3";
+    stopSong();
+    ttl.textContent=sg.t||"Lagu "+people[i][0].split(" ")[0];
+    art.textContent=sg.a||"";
+    box.hidden=false;stage.classList.add("has");
+    au.src=f;playSong();
+  });
+  btn.addEventListener("click",toggle);
+  stage.addEventListener("click",toggle);
+  au.addEventListener("play",stateUI);
+  au.addEventListener("pause",stateUI);
+  au.addEventListener("ended",function(){fill.style.width="0";stateUI();resumeBgm()});
+  au.addEventListener("timeupdate",function(){if(au.duration)fill.style.width=(au.currentTime/au.duration*100)+"%"});
+  au.addEventListener("error",function(){if(au.getAttribute("src")){ttl.textContent="Lagu belum ditambahkan";art.textContent="";stage.classList.remove("playing");resumeBgm()}});
+  $("dlg").addEventListener("close",function(){stopSong();box.hidden=true;stage.classList.remove("has");resumeBgm()});
+})();
 </script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
