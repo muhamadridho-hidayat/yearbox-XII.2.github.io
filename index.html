@@ -676,7 +676,8 @@ main.wrap,.wrap{box-sizing:border-box;width:100%;margin-left:auto!important;marg
 <button onclick="dlg.close()">Tutup</button></dialog>
 <style>
 #vstage{position:relative;width:min(280px,100%);aspect-ratio:1;margin:0 auto 6px;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
-#vstage #dav{position:relative;z-index:1;margin:0!important;box-shadow:0 12px 30px rgba(0,0,0,.55)}
+#vstage #dav{position:relative;z-index:1;width:52%!important;height:auto!important;aspect-ratio:1;margin:0!important;border-radius:50%!important;overflow:hidden;box-shadow:0 0 0 6px #0b0b0d,0 0 0 8px rgba(255,255,255,.12),0 8px 24px rgba(0,0,0,.5);font-size:2.6rem}
+#vstage #dav img{width:100%;height:100%;border-radius:50%!important;object-fit:cover;object-position:center 22%;display:block}
 #vinyl{position:absolute;inset:0;border-radius:50%;display:none;
  background:conic-gradient(rgba(255,255,255,0) 0deg,rgba(255,255,255,.24) 40deg,rgba(255,255,255,0) 90deg,rgba(255,255,255,0) 180deg,rgba(255,255,255,.24) 220deg,rgba(255,255,255,0) 270deg),repeating-radial-gradient(circle,#0d0c0f 0 2px,#221f27 2px 3px);
  box-shadow:0 14px 40px rgba(0,0,0,.55),inset 0 0 0 4px #050506;
@@ -761,6 +762,12 @@ $("gal").innerHTML=(moments.length?moments:[1,2,3,4,5,6]).map(function(m){return
    Judul/artis/nama file khusus (nomor = urutan siswa, mulai 0):
    0:{t:"Pretty Eyes", a:"zehdi", f:"lagu/ziaad.mp3"}   */
 var songs={
+9:{t:"Fire on Fire"},
+18:{t:"Cant del Barça"},
+21:{t:"Kera Sakti"},
+27:{t:"I Will Survive"},
+30:{t:"Training Wheels"},
+35:{t:"Glory Glory Man United"}
 };
 (function(){
   var au=new Audio(),box=$("dsong"),btn=$("dsPlay"),ttl=$("dsTitle"),art=$("dsArtist"),fill=$("dsFill"),stage=$("vstage"),bgm=document.getElementById("bgm"),bgmWas=false;
