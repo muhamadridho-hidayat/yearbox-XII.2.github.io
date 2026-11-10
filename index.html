@@ -622,17 +622,6 @@ main.wrap,.wrap{box-sizing:border-box;width:100%;margin-left:auto!important;marg
   .grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:18px!important}
 }
 
-/* ===== NAV: liquid glass aktif lagi (bias cair), warna belakang dibuat lebih kalem ===== */
-nav,nav.stuck{
-  -webkit-backdrop-filter:blur(5px) saturate(145%) brightness(1.06)!important;
-  backdrop-filter:blur(5px) saturate(145%) brightness(1.06)!important;
-}
-@supports (backdrop-filter: url(#a)){
-  nav,nav.stuck{
-    -webkit-backdrop-filter:url(#ybLiquid) blur(3px) saturate(145%) brightness(1.06)!important;
-    backdrop-filter:url(#ybLiquid) blur(3px) saturate(145%) brightness(1.06)!important;
-  }
-}
 </style>
 </head>
 <body>
