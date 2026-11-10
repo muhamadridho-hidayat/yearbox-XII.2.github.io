@@ -944,5 +944,53 @@ function frame(now){
 requestAnimationFrame(function(n){prev=n;frame(n);cv.classList.add("on")});
 })();
 </script>
+<!-- ====== MUSIK LATAR ====== -->
+<audio id="bgm" src="musik.mp3" loop preload="auto"></audio>
+<button id="musicBtn" type="button" aria-label="Putar musik" aria-pressed="false" title="Musik"><span class="eq"><i></i><i></i><i></i></span></button>
+<style>
+#musicBtn{position:fixed!important;right:max(14px,env(safe-area-inset-right,0px))!important;bottom:calc(14px + env(safe-area-inset-bottom,0px))!important;z-index:60;width:48px!important;height:48px!important;min-width:0!important;padding:0!important;margin:0!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.35)!important;background:rgba(24,22,60,.6)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#f3d9a0!important;cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.35)!important;-webkit-tap-highlight-color:transparent}
+#musicBtn:before{display:none!important}
+#musicBtn:hover{transform:none!important;background:rgba(40,36,90,.75)!important}
+#musicBtn .eq{display:flex;gap:3px;align-items:flex-end;height:18px}
+#musicBtn .eq i{display:block;width:3px;height:6px;background:currentColor;border-radius:2px}
+#musicBtn.on .eq i{animation:ybeq .9s ease-in-out infinite}
+#musicBtn.on .eq i:nth-child(2){animation-delay:.25s}
+#musicBtn.on .eq i:nth-child(3){animation-delay:.5s}
+#musicBtn:not(.on)::after{content:"";position:absolute;width:2px;height:28px;background:currentColor;border-radius:2px;transform:rotate(45deg)}
+@keyframes ybeq{0%,100%{height:5px}50%{height:18px}}
+@media (prefers-reduced-motion:reduce){#musicBtn.on .eq i{animation:none;height:12px}}
+</style>
+<script>
+(function(){
+  var a=document.getElementById("bgm"),b=document.getElementById("musicBtn");
+  if(!a||!b)return;
+  a.volume=0.5;
+  var KEY="yb-music-off",want=true,wasPlaying=false;
+  try{if(localStorage.getItem(KEY)==="1")want=false}catch(e){}
+  function ui(){var on=!a.paused;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false");b.setAttribute("aria-label",on?"Jeda musik":"Putar musik")}
+  function play(){var p=a.play();if(p&&p.catch)p.catch(function(){})}
+  var evs=["pointerup","touchend","keydown","click"];
+  function cleanup(){evs.forEach(function(ev){document.removeEventListener(ev,first,true)})}
+  function first(e){
+    if(b.contains(e.target))return;
+    cleanup();
+    if(want&&a.paused)play();
+  }
+  evs.forEach(function(ev){document.addEventListener(ev,first,true)});
+  a.addEventListener("play",function(){cleanup();ui()});
+  a.addEventListener("pause",ui);
+  a.addEventListener("error",function(){b.style.display="none"});
+  b.addEventListener("click",function(){
+    if(a.paused){want=true;try{localStorage.removeItem(KEY)}catch(e){};play()}
+    else{want=false;try{localStorage.setItem(KEY,"1")}catch(e){};a.pause()}
+  });
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden){wasPlaying=!a.paused;a.pause()}
+    else if(wasPlaying&&want){play()}
+  });
+  if(want){var p=a.play();if(p&&p.catch)p.catch(function(){})}
+  ui();
+})();
+</script>
 </body>
 </html>
