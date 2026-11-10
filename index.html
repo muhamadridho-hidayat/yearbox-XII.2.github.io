@@ -728,13 +728,55 @@ $("grid").onclick=function(e){var c=e.target.closest(".card");if(!c)return;var p
   var k=+c.dataset.i,d=$("dav");if(photos[k+1]){d.className="avbig";d.style.background="none";d.innerHTML='<img src="'+photos[k+1]+'" alt="">'}else{d.className="av";d.style.background=cols[k%6];d.textContent=ini(p[0])};$("dn").textContent=p[0];$("da").textContent=p[1];var dc=$("dc");dc.innerHTML=p[3]?"Cita-cita: <b>"+esc(p[3])+"</b>":"";dc.style.display=p[3]?"":"none";$("dq").textContent="“"+p[2]+"”";$("dlg").showModal()};
 $("awards").innerHTML=awards.map(function(a){return '<div class="award"><small>'+a[0]+'</small><b>'+esc(a[1]).split(" · ").join("<br>")+'</b></div>'}).join("");
 $("gal").innerHTML=(moments.length?moments:[1,2,3,4,5,6]).map(function(m){return typeof m==="object"?'<figure class="shot"><img loading="lazy" src="'+m.src+'" alt=""></figure>':'<div class="shot empty">Foto menyusul</div>'}).join("");
-var notes=[{n:"XII.2",m:"Jadilah yang pertama menulis pesan di sini."}];
-try{var s=localStorage.getItem("yb-notes");if(s)notes=JSON.parse(s)}catch(e){}
-function wall(){$("wall").innerHTML=notes.map(function(n,i){return '<div class="note" style="--r:'+((i*37%7)-3)+'deg"><p>'+esc(n.m)+'</p><b>— '+esc(n.n)+'</b></div>'}).join("")}
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ====== TEMBOK PESAN (Firebase Firestore, terlihat semua orang) ======
+   Ganti nilai di bawah dengan config dari Firebase Console
+   (Project settings > Your apps > Web app > firebaseConfig) */
+var firebaseConfig={
+  apiKey:"AIzaSyCoPOJFR9RS08Y9u3ib5QtVqoL6oVDBEQo",
+  authDomain:"yearboox-75218.firebaseapp.com",
+  projectId:"yearboox-75218",
+  storageBucket:"yearboox-75218.firebasestorage.app",
+  messagingSenderId:"874348741844",
+  appId:"1:874348741844:web:601c608675c6d15d9f2741"
+};
+var notes=[],db=null,loaded=false;
+try{
+  if(firebaseConfig.apiKey.indexOf("ISI")!==0){
+    firebase.initializeApp(firebaseConfig);
+    db=firebase.firestore();
+  }
+}catch(e){console.error(e)}
+function wall(){
+  if(!db){$("wall").innerHTML='<div class="note"><p>Tembok pesan belum tersambung ke database.</p><b>— admin</b></div>';return}
+  if(!loaded){$("wall").innerHTML='<div class="note"><p>Memuat pesan…</p><b>— XII.2</b></div>';return}
+  if(!notes.length){$("wall").innerHTML='<div class="note"><p>Jadilah yang pertama menulis pesan di sini.</p><b>— XII.2</b></div>';return}
+  $("wall").innerHTML=notes.map(function(n,i){return '<div class="note" style="--r:'+((i*37%7)-3)+'deg"><p>'+esc(n.m)+'</p><b>— '+esc(n.n)+'</b></div>'}).join("")
+}
 wall();
-$("send").onclick=function(){var n=$("wn").value.trim(),m=$("wm").value.trim();if(!n||!m)return;
-  notes.unshift({n:n,m:m});wall();$("wn").value=$("wm").value="";
-  try{localStorage.setItem("yb-notes",JSON.stringify(notes))}catch(e){}};
+if(db){
+  db.collection("pesan").orderBy("t","desc").limit(200).onSnapshot(function(snap){
+    notes=snap.docs.map(function(d){return d.data()});
+    loaded=true;wall()
+  },function(err){console.error(err);loaded=true;notes=[];wall()});
+}
+$("send").onclick=function(){
+  var n=$("wn").value.trim(),m=$("wm").value.trim(),btn=$("send");
+  if(!db||!n||!m||btn.disabled)return;
+  btn.disabled=true;var lbl=btn.textContent;btn.textContent="Mengirim…";
+  db.collection("pesan").add({
+    n:n.slice(0,30),m:m.slice(0,160),
+    t:firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){
+    $("wn").value=$("wm").value="";
+  }).catch(function(e){console.error(e);alert("Pesan gagal terkirim, coba lagi.")})
+  .then(function(){
+    setTimeout(function(){btn.disabled=false;btn.textContent=lbl},4000);
+  });
+};
 </script>
 <dialog id="lb"><img alt=""></dialog>
 <script>
