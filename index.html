@@ -662,6 +662,7 @@ nav:after{display:none!important;animation:none!important}
   section>h2{animation:ybHead linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
   .note{animation:none}
 }
+@media (max-width:520px){nav{padding:10px 6px!important}nav{gap:4px!important}nav a{padding:6px 7px!important;font-size:.72rem!important}}
 </style>
 </head>
 <body>
@@ -673,7 +674,7 @@ nav:after{display:none!important;animation:none!important}
   <h1>XII.2:<br><span>Our Little Universe</span></h1>
   <p>Sebuah kenangan dari wali kelas dan 36 siswa XII.2. Dua tahun bersama, satu cerita, dan begitu banyak kenangan yang akan selalu punya tempat.</p>
 </header>
-<nav><a href="#siswa">Keluarga</a><a href="#award">Penghargaan</a><a href="#cerita">Momen</a><a href="#pesan">Pesan</a></nav>
+<nav><a href="#siswa">Keluarga</a><a href="#award">Penghargaan</a><a href="#guru">Guru</a><a href="#cerita">Momen</a><a href="#pesan">Pesan</a></nav>
 <main class="wrap">
   <section id="siswa">
     <h2>Keluarga XII.2</h2>
@@ -686,6 +687,11 @@ nav:after{display:none!important;animation:none!important}
     <h2>Penghargaan Kelas</h2>
     <p class="sub">Hasil voting paling jujur sepanjang sejarah.</p>
     <div class="awards" id="awards"></div>
+  </section>
+  <section id="guru">
+    <h2>Penghargaan Guru</h2>
+    <p class="sub">Terima kasih untuk semua ilmu, kesabaran, dan doanya.</p>
+    <div class="awards" id="gawards"></div>
   </section>
   <section id="cerita">
     <h2>Momen Bersama</h2>
@@ -792,6 +798,24 @@ $("q").oninput=function(){render(this.value.toLowerCase().trim())};
 $("grid").onclick=function(e){var c=e.target.closest(".card");if(!c)return;var p=people[c.dataset.i];
   var k=+c.dataset.i,d=$("dav");if(photos[k+1]){d.className="avbig";d.style.background="none";d.innerHTML='<img src="'+photos[k+1]+'" alt="">'}else{d.className="av";d.style.background=cols[k%6];d.textContent=ini(p[0])};$("dn").textContent=p[0];$("da").textContent=p[1];var dc=$("dc");dc.innerHTML=p[3]?"Cita-cita: <b>"+esc(p[3])+"</b>":"";dc.style.display=p[3]?"":"none";$("dq").textContent="“"+p[2]+"”";$("dlg").showModal()};
 $("awards").innerHTML=awards.map(function(a){return '<div class="award"><small>'+a[0]+'</small><b>'+esc(a[1]).split(" · ").join("<br>")+'</b></div>'}).join("");
+var gawards=[
+["Wali Kelas Paling Sabar Sedunia","Sri Mardiyanti, S.Pd. · Matematika Wajib"],
+["Paling Enak Didengar Penjelasannya","Afwan, S.Pd. · Bahasa Indonesia"],
+["Paling Telaten Mengajar","Ika Rizki Agustina, S.Pd. · Matematika Lanjutan"],
+["Paling Murah Senyum","Sri Yuhanik Murofiqoh, S.Pd. · Ekonomi"],
+["Paling Bikin Semangat Olahraga","Lutfi Febriyanto, S.Pd. · Penjasorkes"],
+["Paling Jago Mendongeng Masa Lalu","Zaenul Arifin, S.Pd. · Sejarah"],
+["Paling Asyik Diajak Ngobrol","Arif Setiawan, S.Pd. · Prakarya & KWU"],
+["Paling Santai tapi Berisi","Moch Zuhri Shofa, S.Pd. · Informatika"],
+["Paling Dirindukan Nasihatnya","Munawir, M.S.I. · Pendidikan Agama dan Budi Pekerti"],
+["Tempat Curhat Paling Aman","Isro’ah Dwi Nurdiyanti, S.Psi. · BK"],
+["Paling Bikin Kelas Berwarna","Fita Artriya, S.Pd. · Seni Budaya"],
+["Paling Semangat Mengajar","Moeria Erry Miesmiarini, S.Pd. · Bahasa Inggris"],
+["Paling Teliti","Christini Murti, S.Pd. · Kimia"],
+["Paling Berwibawa","Edi Susanto, S.Pd. · PPKn"],
+["Paling Lembut Tutur Katanya","Devi Ratnasari, S.Pd. · Bahasa Jawa"]
+];
+$("gawards").innerHTML=gawards.map(function(a){return '<div class="award"><small>'+a[0]+'</small><b>'+esc(a[1]).split(" · ").join("<br>")+'</b></div>'}).join("");
 $("gal").innerHTML=(moments.length?moments:[1,2,3,4,5,6]).map(function(m){return typeof m==="object"?'<figure class="shot"><img loading="lazy" decoding="async"'+(m.ar?' style="--ar:'+m.ar+'"':'')+' src="'+m.src+'" alt=""></figure>':'<div class="shot empty">Foto menyusul</div>'}).join("");
 </script>
 <script>
